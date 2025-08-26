@@ -68,13 +68,13 @@ module api './app/api-appservice-avm.bicep' = {
       alwaysOn: true
       linuxFxVersion: 'node|20-lts'
     }
-    appSettings: {
-      AZURE_KEY_VAULT_ENDPOINT: keyVault.outputs.uri
-      AZURE_COSMOS_DATABASE_NAME: cosmos.outputs.databaseName
-      AZURE_COSMOS_ENDPOINT: cosmos.outputs.endpoint
-      API_ALLOW_ORIGINS: web.outputs.SERVICE_WEB_URI
-      SCM_DO_BUILD_DURING_DEPLOYMENT: true
-    }
+    // appSettings: {
+    //   AZURE_KEY_VAULT_ENDPOINT: keyVault.outputs.uri
+    //   AZURE_COSMOS_DATABASE_NAME: cosmos.outputs.databaseName
+    //   AZURE_COSMOS_ENDPOINT: cosmos.outputs.endpoint
+    //   API_ALLOW_ORIGINS: web.outputs.SERVICE_WEB_URI
+    //   SCM_DO_BUILD_DURING_DEPLOYMENT: true
+    // }
     appInsightResourceId: monitoring.outputs.applicationInsightsResourceId
     allowedOrigins: [ web.outputs.SERVICE_WEB_URI ]
   }
@@ -109,25 +109,25 @@ module accessKeyVault 'br/public:avm/res/key-vault/vault:0.3.5' = {
 }
 
 // The application database
-module cosmos './app/db-avm.bicep' = {
-  name: 'cosmos'
-  scope: resourceGroup()
-  params: {
-    accountName: !empty(cosmosAccountName) ? cosmosAccountName : '${abbrs.documentDBDatabaseAccounts}${resourceToken}'
-    location: location
-    tags: tags
-  }
-}
+// module cosmos './app/db-avm.bicep' = {
+//   name: 'cosmos'
+//   scope: resourceGroup()
+//   params: {
+//     accountName: !empty(cosmosAccountName) ? cosmosAccountName : '${abbrs.documentDBDatabaseAccounts}${resourceToken}'
+//     location: location
+//     tags: tags
+//   }
+// }
 
 // Give the API managed identity access to Cosmos DB using built-in Data Contributor role
-module apiCosmosRoleAssignment './app/cosmos-role-assignment.bicep' = {
-  name: 'api-cosmos-role'
-  scope: resourceGroup()
-  params: {
-    cosmosAccountName: cosmos.outputs.accountName
-    apiPrincipalId: api.outputs.SERVICE_API_IDENTITY_PRINCIPAL_ID
-  }
-}
+// module apiCosmosRoleAssignment './app/cosmos-role-assignment.bicep' = {
+//   name: 'api-cosmos-role'
+//   scope: resourceGroup()
+//   params: {
+//     cosmosAccountName: cosmos.outputs.accountName
+//     apiPrincipalId: api.outputs.SERVICE_API_IDENTITY_PRINCIPAL_ID
+//   }
+// }
 
 // Create an App Service Plan to group applications under the same payment plan and SKU
 module appServicePlan 'br/public:avm/res/web/serverfarm:0.1.0' = {
@@ -221,8 +221,8 @@ module apimApi 'br/public:avm/ptn/azd/apim-api:0.1.0' = if (useAPIM) {
 }
 
 // Data outputs
-output AZURE_COSMOS_DATABASE_NAME string = cosmos.outputs.databaseName
-output AZURE_COSMOS_ENDPOINT string = cosmos.outputs.endpoint
+// output AZURE_COSMOS_DATABASE_NAME string = cosmos.outputs.databaseName
+// output AZURE_COSMOS_ENDPOINT string = cosmos.outputs.endpoint
 
 // App outputs
 output APPLICATIONINSIGHTS_CONNECTION_STRING string = monitoring.outputs.applicationInsightsConnectionString
